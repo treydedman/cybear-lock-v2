@@ -29,7 +29,15 @@ export default function Header() {
   return (
     <header className="w-full bg-gray-700 px-6 py-4 flex items-center justify-between">
       <Link href="/dashboard" className="flex items-center">
-        <Image src="/cybear-lock.svg" alt="Logo" width={64} height={64} />
+        <div className="h-12 w-auto">
+          <Image
+            src="/cybear-lock.svg"
+            alt="Logo"
+            width={275}
+            height={60}
+            className="h-full w-auto"
+          />
+        </div>
       </Link>
       <button
         onClick={() => setDarkMode(!darkMode)}

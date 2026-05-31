@@ -41,8 +41,9 @@ export default function Home() {
         <Image
           src="/cybear-lock.svg"
           alt="CyBear Lock Logo"
-          width={80}
-          height={80}
+          width={120}
+          height={120}
+          className="h-12 w-auto"
         />
         <div className="flex gap-3">
           <button
@@ -62,13 +63,6 @@ export default function Home() {
 
       {/* Hero */}
       <main className="flex flex-col items-center justify-center flex-1 text-center px-6 py-16">
-        <Image
-          src="/cybear-lock.svg"
-          alt="CyBear Lock"
-          width={120}
-          height={120}
-          className="mb-6"
-        />
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           CyBear Lock
         </h1>
