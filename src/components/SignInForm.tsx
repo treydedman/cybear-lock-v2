@@ -2,7 +2,6 @@
 
 import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useUser } from "./useUser";
 import { User } from "./UserContext";
 
@@ -107,12 +106,16 @@ export function SignInForm() {
         </form>
         <p className="text-center text-sm text-gray-500 mt-6">
           Don't have an account?{" "}
-          <Link
+          <a
             href="/auth?mode=sign-up"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = "/auth?mode=sign-up";
+            }}
             className="relative font-bold text-blue-950 hover:underline before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-blue-950 before:transition-all before:duration-500 hover:before:w-full"
           >
             Sign up here
-          </Link>
+          </a>
         </p>
       </div>
     </div>

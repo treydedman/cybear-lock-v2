@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import zxcvbn from "zxcvbn";
 
 export function RegistrationForm() {
@@ -64,7 +63,7 @@ export function RegistrationForm() {
       if (!res.ok) throw new Error(`fetch Error ${res.status}`);
       const user = await res.json();
       alert(`Successfully registered ${user.username}.`);
-      router.push("/auth");
+      window.location.href = "/auth";
     } catch (err) {
       alert(`Error registering user: ${err}`);
     } finally {
@@ -158,12 +157,16 @@ export function RegistrationForm() {
         </form>
         <p className="mt-6 text-sm text-gray-500 text-center">
           Already have an account?{" "}
-          <Link
+          <a
             href="/auth"
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = "/auth";
+            }}
             className="relative font-bold text-blue-950 hover:underline before:absolute before:bottom-0 before:left-0 before:h-0.5 before:w-0 before:bg-blue-950 before:transition-all before:duration-500 hover:before:w-full"
           >
             Sign in
-          </Link>
+          </a>
         </p>
       </div>
     </div>
