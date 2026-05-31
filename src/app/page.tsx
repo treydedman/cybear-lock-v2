@@ -26,7 +26,7 @@ export default function Home() {
 
       const { user, token } = await res.json();
       handleSignIn(user, token);
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       alert(`Error signing in as guest: ${err}`);
     } finally {

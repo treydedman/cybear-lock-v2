@@ -30,7 +30,7 @@ export function SignInForm() {
       if (!res.ok) throw new Error(`fetch Error ${res.status}`);
       const { user, token } = (await res.json()) as AuthData;
       handleSignIn(user, token);
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       alert(`Error signing in: ${err}`);
     } finally {
@@ -49,10 +49,12 @@ export function SignInForm() {
           password: "guestPass123$",
         }),
       });
-      if (!res.ok) throw new Error(`Guest sign-in failed: ${res.status}`);
-      const { user, token } = (await res.json()) as AuthData;
+
+      if (!res.ok) throw new Error("Guest sign-in failed");
+
+      const { user, token } = await res.json();
       handleSignIn(user, token);
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       alert(`Error signing in as guest: ${err}`);
     } finally {
