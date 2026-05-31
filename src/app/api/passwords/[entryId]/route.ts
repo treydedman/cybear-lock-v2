@@ -6,11 +6,11 @@ import { encrypt } from "@/lib/cipher";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { entryId: string } },
+  { params }: { params: Promise<{ entryId: string }> },
 ) {
   try {
     const user = verifyToken(req.headers.get("authorization"));
-    const { entryId } = params;
+    const { entryId } = await params;
     const { password } = await req.json();
 
     if (!password) throw new ClientError(400, "Password is required");
@@ -35,6 +35,7 @@ export async function PUT(
 
     return NextResponse.json(result.rows[0]);
   } catch (err) {
+    console.error("PUT password error:", err);
     if (err instanceof ClientError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
@@ -47,13 +48,14 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { entryId: string } },
+  { params }: { params: Promise<{ entryId: string }> },
 ) {
   try {
     const user = verifyToken(req.headers.get("authorization"));
-    const entryId = Number(params.entryId);
+    const { entryId } = await params;
+    const entryIdNum = Number(entryId);
 
-    if (isNaN(entryId)) throw new ClientError(400, "Invalid entry ID");
+    if (isNaN(entryIdNum)) throw new ClientError(400, "Invalid entry ID");
 
     const sql = `
       delete from "passwordEntries"
@@ -61,7 +63,7 @@ export async function DELETE(
       returning *;
     `;
 
-    const result = await db.query(sql, [entryId, user.userId]);
+    const result = await db.query(sql, [entryIdNum, user.userId]);
 
     if (result.rowCount === 0)
       throw new ClientError(404, "Password entry not found");
@@ -70,6 +72,7 @@ export async function DELETE(
       message: "Password entry deleted successfully",
     });
   } catch (err) {
+    console.error("DELETE password error:", err);
     if (err instanceof ClientError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }

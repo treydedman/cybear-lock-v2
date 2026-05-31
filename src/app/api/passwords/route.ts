@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { ClientError } from "@/lib/errors";
 import { verifyToken } from "@/lib/auth";
-import { encrypt } from "@/lib/cipher";
+import { encrypt, decrypt } from "@/lib/cipher";
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,8 +16,14 @@ export async function GET(req: NextRequest) {
     `;
 
     const result = await db.query(sql, [user.userId]);
-    return NextResponse.json(result.rows);
+    const entries = result.rows.map((entry) => ({
+      ...entry,
+      password: decrypt(entry.encryptedPassword),
+    }));
+
+    return NextResponse.json(entries);
   } catch (err) {
+    console.error("GET passwords error:", err);
     if (err instanceof ClientError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
@@ -53,6 +59,7 @@ export async function POST(req: NextRequest) {
     ]);
     return NextResponse.json(result.rows[0], { status: 201 });
   } catch (err) {
+    console.error("GET passwords error:", err);
     if (err instanceof ClientError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }

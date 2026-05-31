@@ -1,65 +1,139 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useUser } from "@/components/useUser";
 
 export default function Home() {
+  const router = useRouter();
+  const { handleSignIn } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function handleGuestSignIn() {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/auth/sign-in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier: "Guest",
+          password: "guestPass123$",
+        }),
+      });
+
+      if (!res.ok) throw new Error("Guest sign-in failed");
+
+      const { user, token } = await res.json();
+      handleSignIn(user, token);
+      router.push("/dashboard");
+    } catch (err) {
+      alert(`Error signing in as guest: ${err}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800">
+      {/* Nav */}
+      <header className="w-full bg-gray-700 px-6 py-4 flex items-center justify-between">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+          src="/cybear-lock.svg"
+          alt="CyBear Lock Logo"
+          width={80}
+          height={80}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => router.push("/auth")}
+            className="px-4 py-2 text-sm text-white bg-transparent border border-white rounded-lg hover:bg-white hover:text-gray-700 transition"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => router.push("/auth?mode=sign-up")}
+            className="px-4 py-2 text-sm text-white bg-teal-500 rounded-lg hover:bg-teal-400 transition"
+          >
+            Get Started
+          </button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </header>
+
+      {/* Hero */}
+      <main className="flex flex-col items-center justify-center flex-1 text-center px-6 py-16">
+        <Image
+          src="/cybear-lock.svg"
+          alt="CyBear Lock"
+          width={120}
+          height={120}
+          className="mb-6"
+        />
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          CyBear Lock
+        </h1>
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
+          The Secure Way to Forget Your Passwords
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mb-10">
+          Store and manage your login credentials securely with AES encryption.
+          Clean, fast, and simple — so you can remember the important stuff.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={() => router.push("/auth?mode=sign-up")}
+            className="px-6 py-3 text-white bg-blue-950 rounded-lg hover:bg-teal-500 transition font-medium"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Create an Account
+          </button>
+          <button
+            onClick={handleGuestSignIn}
+            disabled={isLoading}
+            className="px-6 py-3 text-blue-950 dark:text-white border border-blue-950 dark:border-white rounded-lg hover:bg-blue-950 hover:text-white transition font-medium disabled:opacity-50"
           >
-            Documentation
-          </a>
+            {isLoading ? "Loading..." : "Try as Guest"}
+          </button>
         </div>
       </main>
+
+      {/* Features */}
+      <section className="bg-white dark:bg-gray-700 py-12 px-6">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+          <div>
+            <div className="text-3xl mb-3">🔒</div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              AES Encrypted
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-300">
+              Every password is encrypted before it ever touches the database.
+            </p>
+          </div>
+          <div>
+            <div className="text-3xl mb-3">🧑‍💻</div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              Guest Access
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-300">
+              Try the full experience instantly — no account required.
+            </p>
+          </div>
+          <div>
+            <div className="text-3xl mb-3">📱</div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+              Mobile Friendly
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-300">
+              Designed to work beautifully on any device, any screen size.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-700 text-center text-gray-400 text-sm py-4">
+        © {new Date().getFullYear()} CyBear Lock · Built by Trey Dedman
+      </footer>
     </div>
   );
 }

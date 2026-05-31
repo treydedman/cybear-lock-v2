@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ token, user: payload }, { status: 200 });
   } catch (err) {
+    console.error("Sign-in error:", err);
     if (err instanceof ClientError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
