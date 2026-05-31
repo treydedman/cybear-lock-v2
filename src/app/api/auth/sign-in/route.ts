@@ -40,7 +40,20 @@ export async function POST(req: NextRequest) {
 
     const token = signToken(payload);
 
-    return NextResponse.json({ token, user: payload }, { status: 200 });
+    const response = NextResponse.json(
+      { token, user: payload },
+      { status: 200 },
+    );
+
+    response.cookies.set("token", token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    return response;
   } catch (err) {
     console.error("Sign-in error:", err);
     if (err instanceof ClientError) {
